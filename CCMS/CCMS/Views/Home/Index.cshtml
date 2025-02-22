@@ -1,0 +1,574 @@
+﻿@model CCMS.Models.ZoneWardViewModel
+@{
+	// Cast ViewData["secondChartData"] as a list of ChartModel
+	var data = ViewData["data"] as List<ChartModel>;
+}
+
+<div class="mt-12 min-h-screen py-5 sm:py-10">
+	<div class="mx-auto w-full max-w-6xl space-y-1">
+		<!-- Header -->
+		<div class="flex w-full flex-col items-center rounded-lg border border-gray-400 bg-blue-100 px-6 py-4 shadow-xl lg:flex-row">
+			<!-- Title -->
+			@* <h1 class="mb-4 w-full text-3xl font-bold text-gray-800 sm:text-3xl lg:w-1/2 lg:mb-0">
+                Zone and Ward Selection
+            </h1> *@
+
+			<!-- Status Counters -->
+			@* <div class="flex w-full justify-around space-x-4 text-sm font-semibold text-gray-600 lg:w-1/2">
+                @if (chartData != null)
+                {
+                    @foreach (var item in chartData)
+                    {
+                    }
+                }
+            </div> *@
+
+			<div class="flex w-full justify-around space-x-4 text-sm font-semibold text-gray-600 lg:w-1/2">
+				<!-- ON Counter -->
+				<div class="flex flex-col items-center">
+					<p class="text-xs uppercase text-gray-500">ON</p>
+					<span id="ONCount" class="cursor-pointer text-2xl font-bold text-green-500"></span>
+				</div>
+				<!-- OFF Counter -->
+				<div class="flex flex-col items-center">
+					<p class="text-xs uppercase text-gray-500">OFF</p>
+					<span id="OFFCount" class="cursor-pointer text-2xl font-bold" style="color: rgb(251 146 60 / var(--tw-bg-opacity, 1));"></span>
+				</div>
+				<!-- NC Counter -->
+				<div class="flex flex-col items-center">
+					<p class="text-xs uppercase text-gray-500">NC</p>
+					<span id="NCCount" class="cursor-pointer text-2xl font-bold text-red-500"></span>
+				</div>
+				<div class="flex flex-col items-center justify-center">
+					<button class="text-gray-500 hover:text-blue-600" onclick="reloadPage()">
+						<i class="fas fa-sync-alt text-lg"></i>
+					</button>
+				</div>
+			</div>
+
+			@* Search Input *@
+			<div class="mt-4 w-full lg:mt-0 lg:w-1/3">
+				<div class="relative">
+					<input type="text"
+						   id="searchInput"
+						   placeholder="Filter..."
+						   class="w-full rounded-lg border border-gray-500 bg-blue-50 px-4 py-2 text-gray-700 placeholder-gray-400 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300" />
+					<svg class="absolute right-4 top-2.5 h-5 w-5 text-gray-400"
+						 xmlns="http://www.w3.org/2000/svg"
+						 fill="none"
+						 viewBox="0 0 24 24"
+						 stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M16.65 10.5a6.15 6.15 0 11-12.3 0 6.15 6.15 0 0112.3 0z" />
+					</svg>
+				</div>
+			</div>
+		</div>
+
+		<!-- Dropdowns Section -->
+		<div class="flex justify-around gap-1">
+			<!-- Zone Dropdown -->
+			<div class="relative w-1/3">
+				<button id="zone" type="button"
+						class="flex w-full items-center justify-between border border-gray-500 bg-blue-100 px-4 py-3 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+					<span>Zone</span>
+					<i class="fa-solid fa-caret-down"></i>
+				</button>
+				<div id="zone-options"
+					 class="z-10 absolute mt-2 hidden w-full rounded-md bg-blue-100 shadow-lg">
+					<!-- Dynamically Inserted Options -->
+				</div>
+			</div>
+
+			<!-- Ward Dropdown -->
+			<div class="relative w-1/3">
+				<button id="ward" type="button"
+						class="flex w-full items-center justify-between border border-gray-500 bg-blue-100 px-4 py-3 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+					<span>Ward</span>
+					<i class="fa-solid fa-caret-down"></i>
+				</button>
+				<div id="ward-options"
+					 class="z-10 absolute mt-2 hidden max-h-60 w-full overflow-y-auto rounded-md bg-blue-100 shadow-lg">
+					@foreach (var ward in Model.Wards)
+					{
+							<label class="flex items-center gap-2 px-3 py-2 hover:bg-blue-200">
+								<input type="checkbox" value="@ward.Text" class="ward-checkbox h-4 w-4 rounded text-blue-600 focus:ring focus:ring-blue-400" />
+								<span class="">Ward @ward.Text</span>
+							</label>
+					}
+				</div>
+			</div>
+
+			<!-- Status Dropdown -->
+			<div class="relative w-1/3">
+				<button id="status" type="button"
+						class="flex w-full items-center justify-between border border-gray-500 bg-blue-100 px-4 py-3 hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+					<span>Status</span>
+					<i class="fa-solid fa-caret-down"></i>
+				</button>
+				<div id="status-options"
+					 class="z-10 absolute mt-2 hidden max-h-60 w-full overflow-y-auto rounded-md bg-blue-100 shadow-lg">
+					<label class="flex items-center gap-2 px-3 py-2 hover:bg-blue-200">
+						<input type="checkbox" value=1 class="status-checkbox h-4 w-4 rounded text-blue-600 focus:ring focus:ring-blue-400" />
+						<span class="">ON</span>
+					</label>
+					<label class="flex items-center gap-2 px-3 py-2 hover:bg-blue-200">
+						<input type="checkbox" value=0 class="status-checkbox h-4 w-4 rounded text-blue-600 focus:ring focus:ring-blue-400" />
+						<span class="">OFF</span>
+					</label>
+					<label class="flex items-center gap-2 px-3 py-2 hover:bg-blue-200">
+						<input type="checkbox" value=3 class="status-checkbox h-4 w-4 rounded text-blue-600 focus:ring focus:ring-blue-400" />
+						<span class="">NC</span>
+					</label>
+					<label class="flex items-center gap-2 px-3 py-2 hover:bg-blue-200">
+						<input type="checkbox" value=2 class="status-checkbox h-4 w-4 rounded text-blue-600 focus:ring focus:ring-blue-400" />
+						<span class="">BYPASS</span>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<!-- Devices Section -->
+		<div class="space-y-4">
+			<div class="max-h-screen overflow-y-auto shadow-lg">
+				<table class="w-full table-fixed border border-gray-700">
+					<thead class="sticky -top-1 h-full w-full border border-gray-700 bg-blue-100">
+						<!-- Added z-10 and ensured bg-gray-700 is present -->
+						<tr class="h-full w-full border border-gray-700 text-center text-sm uppercase sm:text-left">
+							<th class="w-2/6 px-4 py-3 text-center">Device No</th>
+							<th class="w-3/6 px-4 py-3 text-left">Address</th>
+							<th class="w-1/6 py-3 text-center">Light Status</th>
+						</tr>
+					</thead>
+					<tbody id="devices" class="divide-y divide-gray-700 text-center">
+						<!-- Dynamically Populated Rows -->
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts
+{
+		<script>
+			function reloadPage() {
+				location.reload(); // Reloads the current page
+			}
+
+			function getCookieValue(cookieName) {
+				const cookies = document.cookie.split("; ");
+				for (let cookie of cookies) {
+					const [name, value] = cookie.split("=");
+					if (name === cookieName) {
+						return value;
+					}
+				}
+				return null; // Return null if the cookie is not found
+			}
+
+				var selectedZones = [];
+				var selectedWards = [];
+				var selectedStatus = [];
+				let entireDeviceData = [];
+
+				const currentPath = window.location.pathname;
+
+				// Get the chart data from the ViewData passed to the frontend
+				let data = @Html.Raw(Json.Serialize(ViewData["data"]));
+				console.log('data', data)
+
+				// Access the counts from the first item of firstChartData
+				let ONCount = data[0].on;
+				let OFFCount = data[0].off;
+				let NCCount = data[0].nc;
+
+				// console.log(firstChartData)
+				// console.log(ONCount + " " + OFFCount + " " + NCCount)
+
+				// Set the values to the respective HTML elements
+				document.getElementById("ONCount").textContent = ONCount;
+				document.getElementById("OFFCount").textContent = OFFCount;
+				document.getElementById("NCCount").textContent = NCCount;
+
+				var zones = [
+					{ ZoneID: 1, ZoneName: "Zone 1" },
+					{ ZoneID: 2, ZoneName: "Zone 2" },
+					{ ZoneID: 3, ZoneName: "Zone 3" },
+					{ ZoneID: 4, ZoneName: "Zone 4" },
+				];
+
+				// Toggle zone dropdown visibility when clicked
+				$('#zone').click(function () {
+					$('#zone-options').toggle(); // Toggle visibility of zone options
+				});
+
+				// Toggle ward dropdown visibility when clicked
+				$('#ward').click(function () {
+					$('#ward-options').toggle(); // Toggle visibility of ward options
+				});
+
+				// Toggle ward dropdown visibility when clicked
+				$('#status').click(function () {
+					$('#status-options').toggle(); // Toggle visibility of ward options
+				});
+
+				let fetchDeviceData = async () => {
+					showLoader();
+					try {
+						// Fetch data from the API
+							const response = await fetch("/Home/IMEIs", {
+								responseType: 'blob',
+							});
+
+							if (!response.ok) {
+								throw new Error("Failed to fetch initial data");
+							}
+
+							const data = await response.json();
+							entireDeviceData = data.records || [];
+							console.log(entireDeviceData);
+							renderDeviceData(entireDeviceData)
+					} catch (err) {
+						console.log(err)
+					} finally {
+						hideLoader();
+					}
+				}
+
+				if(currentPath) {
+					console.log(currentPath);
+				}
+
+				async function renderDeviceData(records) {
+						try {
+							showLoader();
+
+							// Fetch data from the API
+							// const response = await fetch("/Home/IMEIs", {
+							// 	responseType: 'blob',
+							// });
+
+							// if (!response.ok) {
+							// 	throw new Error("Failed to fetch initial data");
+							// }
+
+							// const data = await response.json();
+							// const records = data.records || [];
+
+							// Sort the records by P10 value: 1 (ON) first, 0 (OFF) next, others (NC) last
+							records.sort((a, b) => {
+								if (a.lightsts === b.lightsts) return 0; // Keep the order if values are the same
+								if (a.lightsts === 1) return -1; // Move `P10 = 1` to the top
+								if (b.lightsts === 1) return 1;  // Ensure `P10 = 1` stays at the top
+								if (a.lightsts === 0) return -1; // Move `P10 = 0` above others
+								if (b.lightsts === 0) return 1;  // Ensure `P10 = 0` stays above NC
+								if (a.lightsts === 2) return -1; // Move `P10 = 0` above others
+								if (b.lightsts === 2) return 1;  // Ensure `P10 = 0` stays above NC
+								return 1; // Move `NC` (other values) to the bottom
+							});
+
+							// Clear the devices table before appending new data
+							const devicesTable = document.getElementById('devices');
+							devicesTable.innerHTML = '';
+
+							// Populate the devices table
+							records.forEach(device => {
+								const row = `
+									<tr class="cursor-pointer py-3 text-center text-black hover:text-gray-800 hover:bg-gray-50 sm:text-left"
+										onclick="redirectToPage('${device.uid}')">
+										<td class="px-4 py-2 text-center text-sm">${device.uid}</td>
+										<td class="px-4 py-2 text-left text-sm">${device.location}</td>
+										<td class="px-4 py-2 text-center text-sm">
+											${(device.lightsts == 1) ? 'ON' : (device.lightsts == 0) ? 'OFF' : (device.lightsts == 2) ? 'BYPASS' : 'NC'}
+										</td>
+									</tr>`;
+								devicesTable.insertAdjacentHTML('beforeend', row);
+							});
+						} catch (error) {
+							console.error("Error fetching initial data:", error);
+						} finally {
+							hideLoader();
+						}
+				}
+
+
+				const filterDevices = async (selectedZones, selectedWards, selectedStatuses) => {
+					console.log(selectedZones, selectedWards, selectedStatuses);
+					try {
+						const filteredDevices = entireDeviceData.filter(
+							(device) =>
+								(selectedZones.length === 0 || selectedZones.includes(device.zone)) &&
+								(selectedWards.length === 0 || selectedWards.includes(device.ward)) && 
+								(selectedStatuses.length === 0 || selectedStatuses.includes(device.lightsts))
+						);
+						await renderDeviceData(filteredDevices); // Render filtered data
+					} catch (err) {
+						console.log(err);
+					} finally {
+						hideLoader();
+					}
+				};
+
+				// Populate the zone checkboxes
+				$(document).ready(async () => {
+					await fetchDeviceData();
+
+					let getIMEIStatusCount = async () => {
+						try {
+							let response = await fetch(`/Home/getIMEIStatusCount`);
+
+							response = await response.json();
+							console.log("response", response);
+						} catch(err) {
+							console.log(err);
+						}
+					}
+
+					// await getIMEIStatusCount();
+					// Populate Zones
+					$('#zone-options').empty(); // Clear any existing content
+					$.each(zones, function (index, zone) {
+						// console.log(zone.ZoneID)
+						$('#zone-options').append(
+							`<label class="flex items-center gap-2 px-3 py-2 hover:bg-blue-200" >
+								 <input type="checkbox" class="zone-checkbox h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring focus:ring-blue-400" value="${zone.ZoneID}" />
+								 <span class=""> ${zone.ZoneName}</span>
+							</label>`
+						);
+					});
+				})
+
+				// Make the function asynchronous
+				const fetchWardsByZone = async (selectedZones) => {
+					try {
+						// Perform the fetch request with selected zones
+						const response = await fetch(`/Home/GetWardsByZone?zoneIds=${selectedZones}`);
+
+						// Check if the response is successful
+						if (!response.ok) {
+							throw new Error(`Failed to fetch wards: ${response.statusText}`);
+						}
+
+						// Parse the JSON response
+						const data = await response.json();
+						// console.log("AJAX success, data:", data); // Log the returned data
+
+						// Populate new wards
+						if (data.length === 0) {
+							alert('No wards found for the selected zones.');
+							return;
+						}
+						$('#ward-options').empty(); // Clear any existing content
+
+						data.forEach((ward) => {
+							$('#ward-options').append(
+								`<label class="dropdown-item flex items-center gap-2 px-3 py-2 hover:bg-blue-200">
+									<input type="checkbox" class="ward-checkbox h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring focus:ring-blue-400" value="${ward.ward}" />
+									<span class=""> Ward ${ward.ward} </span>
+								</label>`
+							);
+						});
+					} catch (error) {
+						console.error('AJAX error:', error); // Log error details
+						alert('Failed to fetch wards.');
+					}
+				};
+
+				const filterDeveices = async (selectedZones, selectedWards, selectedStatus) => {
+					console.log(selectedZones, selectedWards, selectedStatus)
+					try {
+						// Perform the fetch request with selected zones
+						const response = await fetch(`/Home/FilterDevices`, {
+							method: 'POST', // Use POST method to send data in the body
+							headers: {
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify({
+								zones: selectedZones, // Send selectedZones as part of the body
+								wards: selectedWards, // Send selectedWards as part of the body
+								status: selectedStatus, // Send selectedWards as part of the body
+							}),
+						});
+
+						// Check if the response is successful
+						if (!response.ok) {
+							throw new Error(`Failed to fetch wards: ${response.statusText}`);
+						}
+
+						// Parse the JSON response
+						const data = await response.json();
+						console.log("AJAX success for FilterDevices, devices:", data);
+
+						$('#devices').empty(); // Clear any existing content
+						data.forEach(device => {
+							$('#devices').append(
+								`<tr class="cursor-pointer py-3 text-center text-black hover:text-gray-800 hover:bg-gray-50 sm:text-left" onclick="redirectToPage('${device.uid}')">
+											 <td class="px-4 py-2 text-center text-sm">${device.uid}</td>
+											 <td class="ml-12 px-4 py-2 text-left text-sm">${device.location}</td>
+											 <td class="px-4 py-2 text-center text-sm">
+												${(device.lightsts == 1) ? 'ON' : (device.lightsts == 0) ? 'OFF' : (device.lightsts == 2) ? 'BYPASS' : 'NC'}
+											</td>
+								</tr>`
+							);
+						})
+					} catch (error) {
+						console.error('AJAX error:', error); // Log error details
+						alert('Failed to fetch wards.');
+					}
+				}
+
+				$(document).on('change', '.zone-checkbox', function () {
+					selectedZones = [];
+					$('.zone-checkbox:checked').each(function () {
+						selectedZones.push($(this).val());
+					});
+
+					$('.ward-checkbox:checked').each(function () {
+						selectedWards.push($(this).val());
+					});
+
+					console.log("Selected Zones:", selectedZones);
+					console.log("Selected Wards:", selectedWards);
+
+					// Call the async function
+					fetchWardsByZone(selectedZones);
+					filterDevices(selectedZones, selectedWards, selectedStatus)
+				});
+
+				// Event listener for Ward Checkbox changes
+				$(document).on('change', '.ward-checkbox', function () {
+					// Clear selectedWards and repopulate it based on the selected checkboxes
+					selectedWards = [];
+					$('.ward-checkbox:checked').each(function () {
+						selectedWards.push($(this).val());
+					});
+
+					console.log("Selected Wards:", selectedWards);
+
+					// Call function to filter devices based on selected zones and wards
+					filterDevices(selectedZones, selectedWards, selectedStatus);
+				});
+
+				// Event listener for status Checkbox changes
+				$(document).on('change', '.status-checkbox', function () {
+					// Clear selectedWards and repopulate it based on the selected checkboxes
+					selectedStatus = [];
+					// $('.status-checkbox:checked').each(function () {
+					// 	selectedStatus.push($(this).val());
+					// });
+					const intValue = parseInt($(this).val(), 10); // Convert value to integer
+					if (!isNaN(intValue)) { // Check if the conversion was successful
+						selectedStatus.push(intValue);
+					}
+
+					console.log("Selected status:", selectedStatus);
+
+					// Call function to filter devices based on selected zones and wards
+					filterDevices(selectedZones, selectedWards, selectedStatus);
+				});
+
+				$(document).on('click', '#ONCount', function () {
+					selectedStatus = [];
+
+					selectedStatus.push(1);
+
+					console.log("Selected status:", selectedStatus);
+
+					// Call function to filter devices based on selected zones and wards
+					filterDevices(selectedZones, selectedWards, selectedStatus);
+				});
+
+				$(document).on('click', '#OFFCount', function () {
+					selectedStatus = [];
+
+					selectedStatus.push(0);
+
+					console.log("Selected status:", selectedStatus);
+
+					// Call function to filter devices based on selected zones and wards
+					filterDevices(selectedZones, selectedWards, selectedStatus);
+				});
+
+				// Event listener for status Checkbox changes
+				$(document).on('click', '#NCCount', function () {
+					selectedStatus = [];
+
+					selectedStatus.push(3);
+
+					console.log("Selected status:", selectedStatus);
+
+					// Call function to filter devices based on selected zones and wards
+					filterDevices(selectedZones, selectedWards, selectedStatus);
+				});
+
+				function redirectToPage(uid) {
+					try {
+						console.log("Redirecting with uid:", uid);
+
+						const url = `/Home/DeviceData?uid=${uid}`;
+
+						window.location.href = url;
+					} catch (err) {
+						console.log(err)
+					}
+				}
+
+				$(document).on('click', function (e) {
+					if (!$(e.target).closest('#zone, #zone-options').length) {
+						$('#zone-options').hide();
+					}
+					if (!$(e.target).closest('#ward, #ward-options').length) {
+						$('#ward-options').hide();
+					}
+					if (!$(e.target).closest('#status, #status-options').length) {
+						$('#status-options').hide();
+					}
+				});
+
+				let updatedStatus = async () => {
+					console.log("response")
+					try {
+						const response = await fetch("/Home/updateStatus", {
+							responseType: 'blob',
+						});
+
+						console.log(response)
+					} catch (err) {
+						console.log(err)
+					}
+				}
+
+			// Search input handler
+			// document.getElementById("searchInput").addEventListener("input", function () {
+			// 	const query = this.value.trim().toLowerCase();
+			// 	const table = document.getElementById("devices");
+			// 	const rows = Array.from(table.querySelectorAll("tr"));
+
+			// 	const matchingRows = rows.filter(row => row.textContent.toLowerCase().includes(query));
+			// 	const otherRows = rows.filter(row => !row.textContent.toLowerCase().includes(query));
+
+			// 	table.innerHTML = ''; // Clear table
+			// 	matchingRows.forEach(row => table.appendChild(row)); // Append matching rows first
+			// 	otherRows.forEach(row => table.appendChild(row));   // Then other rows
+			// });
+			document.getElementById("searchInput").addEventListener("input", function () {
+				const query = this.value.trim().toLowerCase();
+				const table = document.getElementById("devices");
+				const rows = Array.from(table.querySelectorAll("tr"));
+
+				rows.forEach(row => {
+					if (row.textContent.toLowerCase().includes(query)) {
+						row.style.display = ""; // Show matching rows
+					} else {
+						row.style.display = "none"; // Hide non-matching rows
+					}
+				});
+			});
+
+				// updatedStatus()
+		</script>
+}
+
+
+			@* ${device.p10 == 1 ? 'ON' : device.p10 == 0 ? 'OFF' : 'NC'} *@
+			@* ${device.status == '1' ? device.p10 == 1 ? 'ON' : 'OFF' : 'NC'} *@

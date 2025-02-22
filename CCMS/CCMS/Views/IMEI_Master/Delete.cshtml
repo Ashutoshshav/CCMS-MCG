@@ -1,0 +1,105 @@
+﻿@model CCMS.Models.IMEI_Master
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>IMEI_Master</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SNO)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SNO)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IMEI_no)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IMEI_no)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Location)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Location)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Response)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Response)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Zone)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Zone)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Ward)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Ward)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Status)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SIM_No)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SIM_No)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Latitude)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Latitude)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Longitude)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Longitude)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Phase)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Phase)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NoOfStreetlight)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NoOfStreetlight)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.FullLoad)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.FullLoad)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ResponseDTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ResponseDTime)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="UID" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

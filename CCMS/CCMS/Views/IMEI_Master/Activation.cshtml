@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "Activation";
+}
+
+<div class="mt-24 flex min-h-screen justify-center">
+    <div class="w-full max-w-md rounded-lg bg-white p-6">
+        <h2 class="mb-4 text-center text-lg font-semibold text-gray-800">Device Activation</h2>
+
+        <!-- UID Filter Input -->
+        <div class="relative">
+            <label for="uidFilter" class="block text-sm font-medium text-gray-700">Enter at least 3 digit of UID:</label>
+            <div id="feedbackBox" class="mt-4 hidden text-sm font-medium"></div>
+
+            <div class="flex items-center gap-2">
+                <input type="text" id="uidFilter" class="w-full rounded-md border p-2 focus:ring focus:ring-blue-300" placeholder="Type to search...">
+
+                <!-- Activation Button (Initially Hidden) -->
+                <button id="activateBtn" class="hidden rounded-md bg-green-500 px-4 py-2 text-white transition-all hover:bg-green-600">
+                    Activate
+                </button>
+            </div>
+
+            <!-- Dropdown for UIDs -->
+            <div id="uidDropdown" class="z-10 absolute mt-1 hidden w-full rounded-md border border-gray-300 bg-white shadow-lg">
+                <ul id="dropdownList" class="overflow-auto p-2"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("uidFilter").addEventListener("input", function() {
+        let uid = this.value.trim();
+        let dropdown = document.getElementById("uidDropdown");
+        let dropdownList = document.getElementById("dropdownList");
+        let activateBtn = document.getElementById("activateBtn");
+
+        activateBtn.classList.add("hidden"); // Hide activate button if user is still typing
+
+        if (uid === "") {
+            dropdown.classList.add("hidden");
+            return;
+        }
+
+        fetch(`/IMEI_Master/FilterJson?uid=${uid}`)
+            .then(response => response.json())
+            .then(data => {
+                dropdownList.innerHTML = ""; // Clear previous results
+                if (data.length === 0) {
+                    dropdown.classList.add("hidden");
+                    return;
+                }
+
+                dropdown.classList.remove("hidden");
+
+                data.forEach(item => {
+                    let li = document.createElement("li");
+                    li.textContent = item.uid;
+                    li.classList.add("cursor-pointer", "p-2", "hover:bg-gray-200", "rounded-md");
+                    li.addEventListener("click", function() {
+                        selectUID(item.uid);
+                    });
+                    dropdownList.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    });
+
+    function selectUID(uid) {
+        document.getElementById("uidFilter").value = uid; // Set selected UID in input
+        document.getElementById("uidDropdown").classList.add("hidden"); // Hide dropdown
+        document.getElementById("activateBtn").classList.remove("hidden"); // Show activate button
+        document.getElementById("activateBtn").setAttribute("data-uid", uid); // Store UID in button
+    }
+
+    // Activate button click
+    document.getElementById("activateBtn").addEventListener("click", function () {
+        let uid = this.getAttribute("data-uid"); // Get selected UID from button
+
+        fetch(`/IMEI_Master/Active`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ uid: uid }) // Sending UID in JSON body
+        })
+        .then(response => response.json())
+        .then(data => {
+            let feedbackBox = document.getElementById("feedbackBox");
+
+            if (data.success) {
+                feedbackBox.textContent = `${data.message}`;
+                feedbackBox.classList.remove("hidden", "bg-red-100", "text-red-700");
+                feedbackBox.classList.add("bg-green-100", "text-green-700", "p-2", "rounded-md");
+
+                setTimeout(() => {
+                    feedbackBox.classList.add("hidden"); // Hide feedback after 3 seconds
+                    document.getElementById("uidFilter").value = ""; // Clear input
+                    document.getElementById("activationSection").classList.add("hidden"); // Hide activation section
+                }, 6000);
+            } else {
+                feedbackBox.textContent = `${data.message}`;
+                feedbackBox.classList.remove("hidden", "bg-green-100", "text-green-700");
+                feedbackBox.classList.add("bg-red-100", "text-red-700", "p-2", "rounded-md");
+            }
+        })
+        .catch(error => console.error("Error activating device:", error));
+    });
+</script>

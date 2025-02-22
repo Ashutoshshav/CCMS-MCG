@@ -1,0 +1,76 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="mt-16 flex min-h-screen w-full items-center justify-center bg-gray-100">
+    <div class="mx-2 w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+        <h2 class="mb-6 text-center text-2xl font-bold text-gray-800">Login</h2>
+
+        <div id="error-message"
+             class="mt-4 hidden text-center text-sm text-red-500">
+            <strong>Invalid credentials or something went wrong.</strong>
+        </div>
+
+        <form id="loginForm" method="post" class="space-y-4">
+            <div class="form-group">
+                <label for="username" class="mb-1 block text-sm font-medium text-gray-700">Username</label>
+                <input type="text"
+                       id="username"
+                       class="form-control w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="Enter your username" />
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="mb-1 block text-sm font-medium text-gray-700">Password</label>
+                <input type="password"
+                       id="password"
+                       class="form-control w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="Enter your password" />
+            </div>
+
+            <button type="submit"
+                    class="btn w-full rounded-lg bg-blue-500 py-2 font-semibold text-white transition duration-200 hover:bg-blue-600">
+                Login
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Handle form submission
+        document.getElementById("loginForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            // Get the input values
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+            // Send a POST request to the login API
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            console.log(username, password)
+            if (response.ok) {
+                // On successful login, get the token and store it in localStorage
+                const data = await response.json();
+                if (data.token) {
+                    console.log(data.token)
+                    window.location.href = '/Chart/index';  // You can adjust this URL to your landing page
+                } else {
+                    console.log(data.message)
+                    let errorMessage = document.getElementById('error-message')
+                    errorMessage.textContent = data.message
+                    errorMessage.style.display = 'block';
+                }
+            } else {
+                // Show error message if login failed
+                document.getElementById('error-message').style.display = 'block';
+            }
+        });
+    </script>
+}

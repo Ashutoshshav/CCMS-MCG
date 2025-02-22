@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCG Dashboard</title>
+    @*   <link rel="stylesheet" href="~/ITWeb.styles.css" asp-append-version="true" /> *@
+    <!-- Include jQuery from CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/lib/tailwindcss/tailwind.min.css" />
+	<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+	<link href="~/css/main.css" rel="stylesheet" />
+</head>
+<body>
+    @{
+        var token = Context.Request.Cookies["Token"];
+    }
+    <span class="hidden">CCMS_WEB_APP -v3.7</span>
+    <div id="loader" class="hide fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div class="spinner"></div>
+    </div>
+    <nav class="z-20 fixed left-0 right-0 top-0 mb-16 flex h-16 items-center justify-between border-b border-blue-300 bg-gray-50 px-4 shadow-md" @* style="background-color: #0c55ad;" *@>
+        <!-- Hamburger Icon for Sidebar -->
+        <div class="flex items-center">
+            <button id="toggleNavbar" class="text-xl text-blue-500 hover:text-gray-950 focus:outline-none">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <!-- Logo -->
+            <a id="logoLink" asp-controller="Chart" asp-action="index" class="flex hidden w-40 items-center text-lg font-bold text-white hover:text-blue-300">
+                <img id="logoImage" src="/images/MCGlogo.png" alt="Logo" asp-append-version="true"
+                     class="hidden hue-rotate-180 invert saturate-200" />
+            </a>
+        </div>
+        @* <h1 class="hidden text-center text-4xl font-semibold text-gray-800 sm:block">CCMS MCG Gurgaon</h1> *@
+        <a asp-controller="Home" asp-action="Index" class="ml-4 flex items-center text-lg font-bold text-white hover:text-blue-300">
+            <img src="/images/Logo5.png" asp-append-version = "true" alt="Logo" class="h-16 contrast-200 invert filter" />
+        </a>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="-translate-x-full z-10 fixed left-0 top-0 mt-16 h-auto w-64 transform rounded-lg bg-gradient-to-b from-gray-100 to-gray-100 py-4 shadow-lg transition-transform duration-300">
+        <ul class="space-y-4 px-4">
+            <li class="flex items-center">
+                <a asp-controller="Chart" asp-action="Index" class="flex w-full items-center space-x-3 rounded-md px-4 py-2 text-gray-900 transition-colors duration-100 hover:bg-blue-300 hover:text-white">
+                    <i class="fa-solid fa-chart-pie text-lg text-gray-900"></i>
+                    <span class="text-base font-semibold">Home</span>
+                </a>
+            </li>
+            <li class="flex items-center">
+                <a asp-controller="Home" asp-action="Index" class="flex w-full items-center space-x-3 rounded-md px-4 py-2 text-gray-900 transition-colors duration-100 hover:bg-blue-300 hover:text-white">
+                    <i class="fa-solid fa-lightbulb text-lg text-gray-900"></i>
+                    <span class="text-base font-semibold">Devices</span>
+                </a>
+            </li>
+            <li class="flex items-center">
+                <a asp-controller="auth" asp-action="login" class="flex w-full items-center space-x-3 rounded-md px-4 py-2 text-gray-900 transition-colors duration-100 hover:bg-blue-300 hover:text-white">
+                    <i class="fa-solid fa-sign-in-alt text-lg text-gray-900"></i>
+                    <span class="text-base font-semibold">Login</span>
+                </a>
+            </li>
+            <li class="flex items-center" id="logout">
+                <a href="#" class="flex w-full items-center space-x-3 rounded-md px-4 py-2 text-gray-900 transition-colors duration-100 hover:bg-blue-300 hover:text-white">
+                    <i class="fa-solid fa-sign-out-alt text-lg text-gray-900"></i>
+                    <span class="text-base font-semibold">Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    @RenderBody()
+
+    <!-- Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let token = "@token";
+            if (token) {
+                const decoded = jwt_decode(token);
+
+                // Extract username and role
+                const username = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+                const userRole = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+                console.log(username + userRole)
+
+                // Add additional menu items based on user role
+                if (userRole != "Visio") {
+                    document.getElementById('logoLink').classList.remove('hidden');
+                    document.getElementById('logoImage').classList.remove('hidden');
+                }
+            }
+            const toggleNavbarButton = document.getElementById("toggleNavbar");
+            const sidebar = document.getElementById("sidebar");
+            const closeSidebarButton = document.getElementById("closeSidebar");
+
+            toggleNavbarButton?.addEventListener("click", () => {
+                sidebar?.classList.toggle("-translate-x-full");
+            });
+
+            closeSidebarButton?.addEventListener("click", () => {
+                sidebar?.classList.add("-translate-x-full");
+            });
+        });
+
+        document.getElementById("logout").addEventListener("click", function () {
+            console.log("Logout button clicked!");
+            document.cookie = `${"Token"}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+            window.location.href = '/auth/login';
+        });
+
+        function hideLoader() {
+            document.getElementById("loader").classList.add("hide");
+        }
+
+        function showLoader(duration) {
+            document.getElementById("loader").classList.remove("hide");
+
+                // If duration is provided, hide the loader after the specified time
+                if (typeof duration === "number" && duration > 0) {
+                    console.log(duration + "showLoader");
+                    setTimeout(() => {
+                        hideLoader();
+                    }, duration);
+                }
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

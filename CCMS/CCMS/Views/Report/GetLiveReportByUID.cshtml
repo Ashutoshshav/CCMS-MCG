@@ -1,0 +1,80 @@
+﻿@model IEnumerable<CCMS.Models.LiveReport>
+
+<div class="mt-16 min-h-screen bg-gray-50 text-center text-gray-800">
+    <div class="m-auto flex flex-wrap items-center justify-center space-x-4 text-center">
+        <h1 class="text-xl font-medium text-gray-700">Live Reports</h1>
+        <span class="text-2xl font-medium text-gray-600">@ViewBag.UID</span>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="container mx-auto px-4">
+        <form method="get" class="flex flex-col items-center justify-center space-y-4 sm:items-center sm:flex-row sm:space-x-4">
+            <input type="hidden" name="UID" value="@ViewBag.UID" />
+            <div class="flex sm:flex-row sm:space-x-4 sm:space-y-0">
+                <div class="flex flex-col">
+                    <label for="startDate" class="mb-1 text-sm font-semibold text-gray-700">Select Date</label>
+                    <input type="date" id="startDate" name="startDate" value="@ViewBag.StartDate"
+                           class="w-full rounded-lg border border-gray-300 px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:w-48" />
+                </div>
+            </div>
+            <div class="flex w-full flex-col space-y-2 sm:w-auto sm:flex-row sm:space-y-0 sm:space-x-4">
+                <!-- Filter Button -->
+                <button type="submit" formaction="@Url.Action("LiveReportFilter")"
+                        class="w-full rounded-lg bg-indigo-500 px-6 py-2 text-base font-medium text-white transition hover:bg-indigo-600 sm:w-auto">
+                    Filter
+                </button>
+                <!-- Download Excel Button -->
+                <button type="submit" formaction="@Url.Action("DownloadLiveReportExcel")"
+                        class="w-full rounded-lg bg-green-500 px-6 py-2 text-base font-medium text-white transition hover:bg-green-600 sm:w-auto">
+                    Download Excel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="container mx-auto px-1 py-6">
+        <!-- Display Reports -->
+        @if (Model != null && Model.Any())
+        {
+            <!-- Responsive Table -->
+            <div class="overflow-x-auto rounded-lg bg-white shadow-md">
+                <table class="min-w-full table-auto border border-gray-300">
+                    <thead class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white">
+                        <tr>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">TIME</th>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">R VOLT</th>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">R CUR</th>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">R KW</th>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">ERROR</th>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">MODE</th>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">RELAY</th>
+                            <th class="border-b px-4 py-2 text-center text-sm font-medium">UNITS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model)
+                        {
+                            <tr class="transition-colors duration-300 ease-in-out hover:bg-gray-100">
+                                <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">
+                                    <span class="block w-20 sm:w-auto">@report.DateTime?.ToString("dd MMM yyyy")</span>
+                                    <span class="block text-gray-500">@report.DateTime?.ToString("HH:mm")</span>
+                                </td>
+                                <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">@report.RVolt</td>
+                                <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">@report.RCurr</td>
+                                <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">@report.RKW</td>
+                                <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">@report.Error</td>
+                                <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">@report.Mode</td>
+                                <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">@report.RelayStatus</td>
+                                        <td class="border-b px-4 py-2 text-center text-sm font-medium text-gray-700">@Math.Round((decimal)(report.Energy ?? 0), 2)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="mt-4 text-gray-600">No records found for the provided UID number.</p>
+        }
+    </div>
+</div>

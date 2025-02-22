@@ -1,0 +1,370 @@
+﻿@model CCMS.CustomModel.DataModel
+
+<div class="mt-16 flex w-full flex-col items-center justify-center md:mt-12 lg:mt-20">
+    <!-- Location Header -->
+    <div class="w-full">
+        <div class="mt-2 flex w-full flex-col items-center justify-between bg-blue-100 px-4 py-3 shadow-md sm:flex-row lg:mt-0">
+            <div class="flex items-center space-x-4">
+                <div class="flex" id="statusImg">
+                </div>
+                <p class="text-lg font-semibold text-gray-800">@Model.IMEI_Master_s.Location</p>
+            </div>
+            <div class="mt-2 text-center sm:mt-0">
+                <p class="text-lg font-normal text-gray-800">
+                    Last Update: <span class="font-semibold text-gray-900">@Model.visLive_s.DTIME_SYS</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Information Section -->
+        <div class="my-4 grid gap-4 px-4 md:grid-cols-2 lg:grid-cols-3">
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Zone:</p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.IMEI_Master_s.Zone</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Ward:</p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.IMEI_Master_s.Ward</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">LAT LONG:</p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.IMEI_Master_s.Ward</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">SIM NO:</p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.IMEI_Master_s.Ward</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">IMEI NO:</p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.IMEI_Master_s.IMEI_no</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">PHASE:</p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">1</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Status -->
+    <div class="w-full">
+        <div class="flex w-full flex-col items-center justify-between bg-blue-100 px-4 py-3 shadow-md sm:flex-row">
+            <div class="flex items-center space-x-4">
+                <p class="text-lg font-semibold text-gray-800">Live Status</p>
+            </div>
+        </div>
+        <div class="my-4 grid gap-4 px-4 md:grid-cols-2 lg:grid-cols-3">
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Voltage:</p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">214</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Current: </p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.visLive_s.P2</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Power: </p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.visLive_s.P3</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Mode: </p>
+                <div style="width:60%;" class="text-xl font-semibold text-gray-900">
+                    @(Model.visLive_s.P11 == 1 ? "MANUAL" : "AUTO")
+                </div>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Door Status: </p>
+                <div style="width:60%;" class="text-xl font-semibold text-gray-900">
+                    @(Model.visLive_s.P12 == 1 ? "OPEN" : "CLOSE")
+                </div>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Error Status: </p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.visLive_s.P5</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Relay Status: </p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.visLive_s.P6</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Date Time: </p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.visLive_s.DTIME_SYS</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">On Time: </p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.visLive_s.DTIME_SYS</p>
+            </div>
+            <div class="flex rounded-lg border bg-white p-3 shadow-sm">
+                <p style="width:40%;" class="text-lg text-gray-700">Units: </p>
+                <p style="width:60%;" class="text-xl font-semibold text-gray-900">@Model.visLive_s.P7</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Section -->
+    <div class="w-full">
+        <div class="flex w-full flex-col items-center justify-between bg-blue-100 px-4 py-3 shadow-md sm:flex-row">
+            <div class="flex items-center space-x-4">
+                <p class="text-lg font-semibold text-gray-800">Control</p>
+            </div>
+        </div>
+        <div class="my-4 grid w-full items-center justify-center gap-4 px-4 sm:grid-cols-2 lg:flex lg:justify-center lg:space-x-6">
+            <button class="border-2 w-full max-w-xs rounded-full border-purple-200 px-36 py-2 text-black shadow-sm hover:shadow-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-300" onclick="updateStatus('9991', '@Model.visLive_s.IMEI_no')" id="btn-on">
+                ON
+            </button>
+            <button class="border-2 w-full max-w-xs rounded-full border-purple-200 px-6 py-2 text-black shadow-sm hover:shadow-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-300" onclick="updateStatus('9992', '@Model.visLive_s.IMEI_no')" id="btn-off">
+                OFF
+            </button>
+            <button class="border-2 w-full max-w-xs rounded-full border-purple-200 px-6 py-2 text-black shadow-sm hover:shadow-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-300" onclick="updateStatus('9993', '@Model.visLive_s.IMEI_no')" id="btn-reset">
+                RESET
+            </button>
+            <button class="border-2 w-full max-w-xs rounded-full border-purple-200 px-6 py-2 text-black shadow-sm hover:shadow-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-300">
+                UPDATE
+            </button>
+        </div>
+    </div>
+
+    <!-- Report Section -->
+    <div class="w-full">
+        <div class="flex w-full flex-col items-center justify-between bg-blue-100 px-4 py-3 shadow-md sm:flex-row">
+            <div class="flex items-center space-x-4">
+                <p class="text-lg font-semibold text-gray-800">Report</p>
+            </div>
+        </div>
+        <div class="my-4 grid w-full items-center justify-center gap-4 px-4 sm:grid-cols-2 lg:flex lg:justify-center lg:space-x-6">
+            <button class="border-2 w-full max-w-xs rounded-full border-purple-200 px-28 py-2 text-black shadow-sm hover:shadow-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-300">
+                Live Report
+            </button>
+            <button class="border-2 w-full max-w-xs rounded-full border-purple-200 px-6 py-2 text-black shadow-sm hover:shadow-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-300">
+                Daily Report
+            </button>
+            <button class="border-2 w-full max-w-xs rounded-full border-purple-200 px-6 py-2 text-black shadow-sm hover:shadow-lg hover:bg-purple-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-300">
+                Print/Excel/PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    setInterval(function () {
+        location.reload(); // This reloads the current page
+    }, 30000); // 30 seconds
+
+    function getCookieValue(cookieName) {
+        const cookies = document.cookie.split("; ");
+        for (let cookie of cookies) {
+            const [name, value] = cookie.split("=");
+            if (name === cookieName) {
+                return value;
+            }
+        }
+        return null; // Return null if the cookie is not found
+    }
+    const token = getCookieValue("Token");
+
+    if (token) {
+        const btnOn = document.getElementById('btn-on');
+        const btnOff = document.getElementById('btn-off');
+        const btnReset = document.getElementById('btn-reset');
+
+        var updateResponse10 = async (IMEI_no, value) => {
+            async function checkP10ValueByIMEI(IMEI_no, intervalId) {
+                try {
+                    if (@Model.visLive_s.P10 == 1) {
+                        // btnOn.disabled = true;
+                        btnOn.classList.add('bg-green-300');
+                        btnOn.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+                        console.log("Model.visLive_s.P10 is ", @Model.visLive_s.P10);
+
+                        btnOff.disabled = false;
+                        btnOff.classList.add('hover:bg-purple-400');
+                        btnOff.classList.remove('bg-red-300');
+                        clearInterval(intervalId)
+                    } else {
+                        console.log(`P10 is not 3 for IMEI: ${IMEI_no}. Current value:`);
+                    }
+                } catch (error) {
+                    console.error("Error checking P10 value:", error);
+                }
+            }
+
+            const intervalId = setInterval(function () {
+                checkP10ValueByIMEI(IMEI_no, intervalId);
+            }, 1000); // Call every 1 second
+        }
+
+        var updateStatus = async (responseSts, IMEI_no) => {
+            try {
+                // console.log(token)
+                const response = await fetch(`/Home/UpdateIMEIStatus`, {
+                    method: 'POST', // Use POST method to send data in the body
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        IMEI_no: IMEI_no,
+                        ResponseSts: responseSts,
+                    }),
+                });
+                console.log(IMEI_no, responseSts)
+
+                // Check if the response is successful
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch wards: ${response.statusText}`);
+                }
+
+                // Parse the JSON response
+                const data = await response.json();
+                if (data.success) {
+                    console.log("response:", data.data.response)
+
+                    if (data.data.response == 9991) {
+                        async function checkP10ValueByIMEI(IMEI_no, intervalId) {
+                            try {
+                                if (@Model.visLive_s.P10 == 1) {
+                                    // btnOn.disabled = true;
+                                    btnOn.classList.add('bg-green-300');
+                                    btnOn.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+                                    console.log("Model.visLive_s.P10 is ", @Model.visLive_s.P10);
+
+                                    btnOff.disabled = false;
+                                    btnOff.classList.add('hover:bg-purple-400');
+                                    btnOff.classList.remove('bg-red-300');
+                                    clearInterval(intervalId)
+                                } else {
+                                    console.log(`P10 is not 3 for IMEI: ${IMEI_no}. Current value:`);
+                                }
+                            } catch (error) {
+                                console.error("Error checking P10 value:", error);
+                            }
+                        }
+
+                        const intervalId = setInterval(function () {
+                            checkP10ValueByIMEI(IMEI_no, intervalId);
+                        }, 1000); // Call every 1 second
+                    } else if (data.data.response == 9992) {
+                        async function checkP10ValueByIMEI(IMEI_no, intervalId) {
+                            try {
+                                if (@Model.visLive_s.P10 == 0) {
+                                    // btnOff.disabled = true;
+                                    btnOff.classList.add('bg-red-300');
+                                    btnOff.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+
+                                    btnOn.disabled = false;
+                                    btnOn.classList.add('hover:bg-purple-400');
+                                    btnOn.classList.remove('bg-green-300');
+                                    clearInterval(intervalId)
+                                } else {
+                                    console.log(`P10 is not 3 for IMEI: ${IMEI_no}. Current value:`);
+                                }
+                            } catch (error) {
+                                console.error("Error checking P10 value:", error);
+                            }
+                        }
+
+                        const intervalId = setInterval(function () {
+                            checkP10ValueByIMEI(IMEI_no, intervalId);
+                        }, 1000); // Call every 1 second
+                    } else {
+                        // btnOn.disabled = true;
+                        btnOn.classList.add('bg-gray-300');
+                        btnOn.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+
+                        // btnOff.disabled = true;
+                        btnOff.classList.add('bg-gray-300');
+                        btnOff.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+
+                        btnReset.classList.add('bg-green-300');
+                        btnReset.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+                    }
+                } else {
+                    alert(data.message)
+                }
+            } catch (err) {
+                console.log(err)
+            }
+        }
+
+
+        $(document).ready(function () {
+            const statusImg = document.getElementById('statusImg');
+            if (@Model.IMEI_Master_s.Status == 1) {
+                $('#statusImg').empty();
+
+                $('#statusImg').append(
+                    `<img class="w-12" src="/images/wifigreenR.png" alt="wifi image" />`
+                );
+            } else {
+                $('#statusImg').empty();
+
+                $('#statusImg').append(
+                    `<img class="w-12" src="/images/wifiNR.png" alt="wifi image" />`
+                );
+            }
+
+            if (@Model.visLive_s.P10 == 1) {
+                // btnOn.disabled = true;
+                btnOn.classList.add('bg-green-300');
+                btnOn.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+                console.log("Model.visLive_s.P10 is ", @Model.visLive_s.P10);
+            } else {
+                // btnOff.disabled = true;
+                btnOff.classList.add('bg-red-300');
+                btnOff.classList.remove('bg-purple-200', 'hover:bg-purple-400');
+                console.log("Model.visLive_s.P10 is ", @Model.visLive_s.P10);
+            }
+
+
+            let isP11 = @(Model.visLive_s?.P11 ?? 0);
+            if (isP11 == 1) {
+                console.log("Model.visLive_s.P11 is 1", isP11);
+                btnOn.disabled = true;
+                btnOff.disabled = true;
+                btnReset.disabled = true;
+
+                btnOn.classList.remove('bg-purple-200', 'hover:bg-purple-400', 'border-2');
+                btnOff.classList.remove('bg-purple-200', 'hover:bg-purple-400', 'border-2');
+                btnReset.classList.remove('bg-purple-200', 'hover:bg-purple-400', 'border-2');
+            }
+            console.log("Model.visLive_s.P11", isP11);
+        })
+    } else {
+        window.location.href = '/auth/login';
+    }
+
+    // var updateResponse10 = async (responseSts, status, IMEI_no) => {
+    //     updateStatus('9993', '2', '@Model.visLive_s.IMEI_no')
+
+    //     async function checkP10ValueByIMEI(IMEI_no, intervalId) {
+    //         try {
+    //             const response = await fetch(`/api/checkP10ByIMEI?imei=${IMEI_no}`, {
+    //                 method: 'GET'
+    //             });
+
+    //             if (!response.ok) {
+    //                 if (response.status === 404) {
+    //                     console.error(`No record found for IMEI: ${IMEI_no}`);
+    //                 } else {
+    //                     console.error("Error fetching P10 value:", response.statusText);
+    //                 }
+    //                 return;
+    //             }
+
+    //             const data = await response.json();
+
+    //             if (data.value == 3) {
+    //                 console.log(`P10 is updated to 3 for IMEI: ${IMEI_no}.`);
+    //                 updateStatus('9999', '2', '@Model.visLive_s.IMEI_no')
+    //                 clearInterval(intervalId)
+    //             } else {
+    //                 console.log(`P10 is not 3 for IMEI: ${IMEI_no}. Current value:`, data.value);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error checking P7 value:", error);
+    //         }
+    //     }
+
+    //     const intervalId = setInterval(function () {
+    //         checkP10ValueByIMEI(IMEI_no, intervalId);
+    //     }, 1000); // Call every 1 second
+    // }
+</script>

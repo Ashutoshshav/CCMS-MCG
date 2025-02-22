@@ -1,0 +1,117 @@
+﻿@model CCMS.Models.IMEI_Master
+
+@{
+    ViewData["Title"] = "UidImeiBinding";
+}
+
+<div class="mt-16"></div>
+<h2 class="mt-8 text-center text-2xl font-semibold text-gray-800">UID IMEI Binding</h2>
+
+<!-- Error and Success Messages -->
+@if (TempData["ErrorMessage"] != null)
+{
+    <p class="rounded-md bg-red-100 p-2 text-center text-red-500">@TempData["ErrorMessage"]</p>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <p class="rounded-md bg-green-100 p-2 text-center text-green-500">@TempData["SuccessMessage"]</p>
+}
+
+<!-- UID Input & Dropdown -->
+<div class="mx-auto max-w-lg rounded-lg bg-white p-6 shadow-md">
+    <label for="uid" class="mb-2 block font-medium text-gray-700">Enter UID:</label>
+    <div class="relative">
+        <input type="text" id="uidSearch" class="w-full rounded-md border p-2 focus:ring-blue-500 focus:border-blue-500"
+               placeholder="Type to search UID..." autocomplete="off">
+        <div id="uidDropdown" class="z-10 absolute left-0 right-0 hidden max-h-40 overflow-auto rounded-md bg-white shadow-lg"></div>
+    </div>
+</div>
+
+<!-- Editable Form -->
+<form asp-action="UpdateTestedDevice" method="post" id="editForm"
+      class="mx-auto mt-6 hidden max-w-lg rounded-lg bg-white p-6 shadow-md">
+    <input type="hidden" name="UID" id="UID" />
+
+    <div class="grid-cols-1 grid gap-4">
+        <div>
+            <label class="block font-medium text-gray-700">Phase:</label>
+            <input type="text" name="Phase" id="Phase"
+                   class="w-full rounded-md border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <div>
+            <label class="block font-medium text-gray-700">Location:</label>
+            <input type="text" name="Location" id="Location"
+                   class="w-full rounded-md border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+
+        <div>
+            <label class="block font-medium text-gray-700">IMEI No:</label>
+            <input type="text" name="IMEI_no" id="IMEI_no"
+                   class="w-full rounded-md border border-gray-300 p-2 focus:ring-blue-500 focus:border-blue-500" />
+        </div>
+    </div>
+
+    <div class="mt-6 flex justify-end">
+        <button type="submit" class="rounded-lg bg-green-600 px-6 py-2 text-white transition hover:bg-green-700">
+            Save
+        </button>
+    </div>
+</form>
+
+<!-- Success Message -->
+<div id="successMessage" class="mt-4 hidden text-center font-semibold text-green-600"></div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const uidSearch = document.getElementById("uidSearch");
+        const uidDropdown = document.getElementById("uidDropdown");
+        const editForm = document.getElementById("editForm");
+
+        uidSearch.addEventListener("input", function () {
+            const query = this.value.trim();
+            if (query.length < 2) {
+                uidDropdown.classList.add("hidden");
+                return;
+            }
+
+            fetch(`/IMEI_Master/GetUIDs?query=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    uidDropdown.innerHTML = "";
+                    if (data.length === 0) {
+                        uidDropdown.classList.add("hidden");
+                        return;
+                    }
+
+                    data.forEach(uid => {
+                        const option = document.createElement("div");
+                        option.classList.add("p-2", "hover:bg-gray-200", "cursor-pointer");
+                        option.textContent = uid;
+                        option.onclick = function () {
+                            uidSearch.value = uid;
+                            uidDropdown.classList.add("hidden");
+                            loadDeviceData(uid);
+                        };
+                        uidDropdown.appendChild(option);
+                    });
+
+                    uidDropdown.classList.remove("hidden");
+                });
+        });
+
+        function loadDeviceData(uid) {
+            fetch(`/IMEI_Master/GetDeviceDetails?uid=${uid}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("UID").value = data.uid;
+                    document.getElementById("Phase").value = data.phase;
+                    document.getElementById("Location").value = data.location;
+                    document.getElementById("IMEI_no").value = data.imei_no;
+                    editForm.classList.remove("hidden");
+                })
+                .catch(error => console.error("Error loading device data:", error));
+        }
+    });
+</script>

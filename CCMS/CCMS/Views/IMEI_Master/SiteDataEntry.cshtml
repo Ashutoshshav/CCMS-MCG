@@ -1,0 +1,170 @@
+﻿@model CCMS.Models.IMEI_Master
+
+@{
+    ViewData["Title"] = "Update Device";
+}
+
+<div class="mt-16"></div>
+<h2 class="text-center text-3xl font-bold text-gray-800">Site Data Entry</h2>
+
+<!-- Error and Success Messages -->
+@if (TempData["ErrorMessage"] != null)
+{
+    <p class="mx-auto max-w-lg rounded-lg bg-red-100 p-3 text-center text-red-600 shadow-md">
+        @TempData["ErrorMessage"]
+    </p>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <p class="mx-auto max-w-lg rounded-lg bg-green-100 p-3 text-center text-green-600 shadow-md">
+        @TempData["SuccessMessage"]
+    </p>
+}
+
+<!-- UID Input with Auto-Suggest -->
+<div class="mx-auto mb-6 max-w-lg">
+    <label for="uid" class="block text-lg font-medium text-gray-700">Enter UID:</label>
+    <div class="relative">
+        <input type="text" id="uidInput"
+               class="block w-full rounded-lg border border-gray-300 p-2 text-lg shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+               placeholder="" autocomplete="off" oninput="fetchUIDs()" />
+
+        <!-- Suggestions List -->
+        <div id="uidSuggestions"
+             class="absolute left-0 right-0 mt-2 hidden max-h-60 overflow-auto rounded-lg border border-gray-300 bg-white p-2 shadow-lg">
+        </div>
+    </div>
+</div>
+
+<!-- Update Form -->
+<form asp-action="UpdateDevice" asp-controller="IMEI_Master" method="post" id="updateForm"
+      class="mx-auto mt-6 hidden w-full max-w-3xl rounded-xl border border-gray-300 bg-white p-8 shadow-lg">
+    <input type="hidden" asp-for="UID" id="UID" />
+
+    @* <h2 class="mb-6 text-center text-2xl font-semibold text-gray-800">Update Device Details</h2> *@
+
+    <div class="grid-cols-1 grid gap-4 md:grid-cols-2">
+        <!-- Location -->
+        <div>
+            <label for="Location" class="block font-medium text-gray-700">Location</label>
+            <input asp-for="Location" id="Location" placeholder="Enter Location"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Latitude -->
+        <div>
+            <label for="Latitude" class="block font-medium text-gray-700">Latitude</label>
+            <input asp-for="Latitude" id="Latitude" placeholder="Enter Latitude"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Longitude -->
+        <div>
+            <label for="Longitude" class="block font-medium text-gray-700">Longitude</label>
+            <input asp-for="Longitude" id="Longitude" placeholder="Enter Longitude"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- SIM No -->
+        <div>
+            <label for="SIM_No" class="block font-medium text-gray-700">SIM Number</label>
+            <input asp-for="SIM_No" id="SIM_No" placeholder="Enter SIM Number"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- IMEI No -->
+        <div>
+            <label for="IMEI_no" class="block font-medium text-gray-700">IMEI Number</label>
+            <input asp-for="IMEI_no" id="IMEI_no" placeholder="Enter IMEI Number"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- No of Streetlights -->
+        <div>
+            <label for="NoOfStreetlight" class="block font-medium text-gray-700">No. of Streetlights</label>
+            <input asp-for="NoOfStreetlight" id="NoOfStreetlight" placeholder="Enter No. of Streetlights"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Full Load -->
+        <div>
+            <label for="FullLoad" class="block font-medium text-gray-700">Full Load</label>
+            <input asp-for="FullLoad" id="FullLoad" placeholder="Enter Full Load"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Zone -->
+        <div>
+            <label for="Zone" class="block font-medium text-gray-700">Zone</label>
+            <input asp-for="Zone" id="Zone" placeholder="Enter Zone"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+
+        <!-- Ward -->
+        <div>
+            <label for="Ward" class="block font-medium text-gray-700">Ward</label>
+            <input asp-for="Ward" id="Ward" placeholder="Enter Ward"
+                   class="w-full rounded-md border border-gray-300 p-2 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200" />
+        </div>
+    </div>
+        <div class="mt-2 flex justify-center">
+            <button type="submit"
+                    class="w-full rounded-lg bg-blue-600 px-8 py-3 text-lg font-semibold text-white shadow-md transition duration-300 hover:bg-blue-700 focus:ring focus:ring-blue-300 focus:outline-none md:w-auto">
+                Save
+            </button>
+        </div>
+</form>
+
+<script>
+    async function fetchUIDs() {
+        let uidInput = document.getElementById("uidInput").value;
+        let suggestionBox = document.getElementById("uidSuggestions");
+
+        if (uidInput.length < 3) {
+            suggestionBox.classList.add("hidden");
+            return;
+        }
+
+        let response = await fetch(`/IMEI_Master/GetSiteUIDs?query=${uidInput}`);
+        let uids = await response.json();
+
+        suggestionBox.innerHTML = "";
+        if (uids.length === 0) {
+            suggestionBox.classList.add("hidden");
+            return;
+        }
+
+        uids.forEach(uid => {
+            let item = document.createElement("div");
+            item.className = "cursor-pointer p-3 text-lg hover:bg-blue-100 rounded-md transition";
+            item.innerText = uid;
+            item.onclick = () => selectUID(uid);
+            suggestionBox.appendChild(item);
+        });
+
+        suggestionBox.classList.remove("hidden");
+    }
+
+    async function selectUID(uid) {
+        document.getElementById("uidInput").value = uid;
+        document.getElementById("uidSuggestions").classList.add("hidden");
+
+        let response = await fetch(`/IMEI_Master/GetDeviceData?uid=${uid}`);
+        let device = await response.json();
+        console.log(device);
+
+        document.getElementById("UID").value = device.uid;
+        document.getElementById("Location").value = device.location;
+        document.getElementById("Latitude").value = device.latitude;
+        document.getElementById("Longitude").value = device.longitude;
+        document.getElementById("SIM_No").value = device.siM_No;
+        document.getElementById("IMEI_no").value = device.imeI_no;
+        document.getElementById("NoOfStreetlight").value = device.noOfStreetlight;
+        document.getElementById("FullLoad").value = device.fullLoad;
+        document.getElementById("Zone").value = device.zone;
+        document.getElementById("Ward").value = device.ward;
+
+        document.getElementById("updateForm").classList.remove("hidden");
+    }
+</script>

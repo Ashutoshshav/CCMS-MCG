@@ -1,0 +1,385 @@
+﻿@model ChartViewModel
+
+@{
+    var firstChartData = Model.FirstChart.FirstOrDefault();  // Access the first chart data
+    var secondChartData = Model.SecondChart.FirstOrDefault();  // Access the second chart data
+}
+
+<div class="mt-8 flex min-h-screen w-full flex-col justify-center gap-4 bg-gray-100 p-3 sm:p-4 sm:m-0">
+    <h1 class="mt-8 text-center text-3xl font-semibold text-gray-900 lg:mt-14">Overall Device Status</h1>
+    <div class="grid-cols-1 grid w-full max-w-full gap-8 sm:grid-cols-2">
+        <div class="w-full rounded-lg border border-gray-300 px-1 py-4 text-gray-900 shadow-lg sm:px-3">
+            <div class="flex justify-between px-2 text-lg font-semibold sm:text-xl">
+                <h2>TOTAL LAMPS</h2>
+                <h2 class="text-2xl">@(firstChartData.TotalNoOfStreetlight)</h2>
+            </div>
+            <!-- First Chart with Legend -->
+            <div class="flex-col items-center justify-around lg:flex">
+                <canvas id="firstChart" class="h-80 w-80 sm:w-80 sm:h-80"></canvas>
+                <ul id="firstChartLegend" class="mt-4 flex items-center justify-around text-sm text-gray-700"></ul>
+            </div>
+        </div>
+
+        <div class="w-full rounded-lg border border-gray-300 px-1 py-4 text-gray-800 shadow-lg sm:px-3">
+            <div class="flex justify-between px-2 text-lg font-semibold sm:text-xl">
+                <h2>TOTAL CCMS</h2>
+                <h2 class="text-2xl">@(secondChartData.ON + secondChartData.OFF + secondChartData.NC)</h2>
+            </div>
+            <!-- Second Chart with Legend -->
+            <div class="flex-col items-center justify-around lg:flex">
+                <canvas id="secondChart" class="h-80 w-80 sm:w-80 sm:h-80"></canvas>
+                <ul id="secondChartLegend" class="mt-4 flex items-center justify-around text-sm text-gray-700">
+                    <!-- Legend items will be dynamically generated -->
+                </ul>
+            </div>
+            @* <div class="flex items-center justify-around">
+            <canvas id="secondChart" class="w-5/5 sm:w-80"></canvas>
+            <ul id="secondChartLegend" class="mt-4 block space-y-1 text-sm"></ul>
+            </div> *@
+        </div>
+    </div>
+
+    <div class='grid-cols-1 grid gap-3 sm:grid-cols-2 lg:grid-cols-4'>
+        <div class='border-2 flex flex-col rounded-3xl border-blue-300 p-4 text-gray-900'>
+            <div class='flex justify-between py-2'>
+                <h2 class='text-lg font-medium'>TOTAL CCMS</h2>
+                <p class='text-lg font-medium'>@(secondChartData.ON + secondChartData.OFF + secondChartData.NC)</p>
+            </div>
+            <div class='flex justify-between'>
+                <p>AUTO</p>
+                <button>474</button>
+            </div>
+            <div class='flex justify-between'>
+                <p>BYPASS</p>
+                <button>474</button>
+            </div>
+            <div class='flex justify-between'>
+                <p>NOT COMM.</p>
+                <button>@secondChartData.NC</button>
+            </div>
+            <div class='flex justify-between'>
+                <p>COMM.</p>
+                <button>474</button>
+            </div>
+        </div>
+        <div class='border-2 flex flex-col rounded-3xl border-blue-300 p-4 text-gray-900 shadow-lg hover:shadow-xl'>
+            <div class='flex justify-between py-2'>
+                <h2 class='text-lg font-medium'>INPUT ISSUES</h2>
+                <p class='text-lg font-medium'>474</p>
+            </div>
+            <div class='flex justify-between'>
+                <p>LOW VOL</p>
+                <button>474</button>
+            </div>
+            <div class='flex justify-between'>
+                <p>HIGH VOL</p>
+                <button>474</button>
+            </div>
+            <div class='flex justify-between'>
+                <p>POWER FAIL</p>
+                <button>474</button>
+            </div>
+        </div>
+        <div class='border-2 flex flex-col rounded-3xl border-blue-300 p-4 text-gray-900 shadow-lg hover:shadow-xl'>
+            <div class='flex justify-between py-2'>
+                <h2 class='text-lg font-medium'>OUTPUT ISSUES</h2>
+                <p class='text-lg font-medium'>474</p>
+            </div>
+            <div class='flex justify-between'>
+                <p>MCB TRIP</p>
+                <button>474</button>
+            </div>
+            <div class='flex justify-between'>
+                <p>HIGH CUR.</p>
+                <button>474</button>
+            </div>
+        </div>
+        <div class='border-2 flex flex-col rounded-3xl border-blue-300 p-4 text-gray-900 shadow-lg hover:shadow-xl'>
+            <div class='flex justify-between py-2'>
+                <h2 class='text-lg font-medium'>OTHER ISSUES</h2>
+                <p class='text-lg font-medium'>474</p>
+            </div>
+            <div class='flex justify-between'>
+                <p>CONTRACTOR FAIL</p>
+                <button>474</button>
+            </div>
+            <div class='flex justify-between'>
+                <p>METER COM FAIL</p>
+                <button>474</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    setInterval(function () {
+        location.reload(); // This reloads the current page
+    }, 30000); // 30 seconds
+
+    let TotalNoOfStreetlight = @firstChartData.TotalNoOfStreetlight
+        let TotalCCMS = @(secondChartData.ON + secondChartData.OFF + secondChartData.NC)
+
+            let updateStatusNetwork = async () => {
+                try {
+                    console.log("Start"); // Indicates the start of the process
+
+                    const response = await fetch("/Home/updateStatus", {
+                        responseType: "blob",
+                    });
+
+                    console.log("Processing"); // Indicates the operation is in progress
+
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch initial data");
+                    } else {
+                        console.log("Success: Update status completed"); // Indicates successful completion
+                    }
+                } catch (err) {
+                    console.log("Error: ", err.message); // Indicates an error occurred
+                } finally {
+                    console.log("End"); // Always indicates the end of the function execution
+                }
+            };
+
+    function centerTextPlugin(totalNum) {
+        Chart.register({
+            id: 'centerTextPlugin',
+            beforeDraw: function (chart) {
+                if (chart.config.type === 'doughnut') {
+                    const { width, height } = chart;
+                    const ctx = chart.ctx;
+                    const total = totalNum
+                    // const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0); // Sum of all data
+                    const onDevices = chart.data.datasets[0].data[0]; // "ON" value is the first dataset value (adjust as needed)
+
+                    // Calculate the percentage of ON devices
+                    const onPercentage = ((onDevices / total) * 100).toFixed(2);
+
+                    ctx.restore();
+
+                    // Font and styling for percentage text
+                    const fontSizePercentage = (height / 125).toFixed(2); // Dynamically adjust font size
+                    ctx.font = `${fontSizePercentage}em sans-serif`;
+                    ctx.textBaseline = 'middle';
+                    ctx.fillStyle = '#202021'; // Text color
+
+                    // Calculate the center coordinates for percentage text
+                    const percentageText = `${total}`;
+                    const percentageTextX = Math.round((width - ctx.measureText(percentageText).width) / 1.9);
+                    const percentageTextY = height / 1.9 - 10; // Slightly above center for better spacing
+                    ctx.fillText(percentageText, percentageTextX, percentageTextY);
+
+                    // Font and styling for "Working" text
+                    const fontSizeLabel = (height / 300).toFixed(2); // Slightly smaller font size for label
+                    ctx.font = `${fontSizeLabel}em sans-serif`;
+                    const labelText = 'Streetlights';
+                    const labelTextX = Math.round((width - ctx.measureText(labelText).width) / 1.9);
+                    const labelTextY = height / 1.9 + 15; // Slightly below center for better spacing
+                    ctx.fillText(labelText, labelTextX, labelTextY);
+
+                    ctx.save();
+                }
+            },
+        });
+    }
+
+    centerTextPlugin(TotalNoOfStreetlight)
+    centerTextPlugin(TotalCCMS)
+
+    // Chart.register({
+    //     id: 'curvedLabelsPlugin',
+    //     afterDraw(chart) {
+    //         const { ctx, data, chartArea } = chart;
+    //         const centerX = (chartArea.left + chartArea.right) / 2; // Center X of the chart
+    //         const centerY = (chartArea.top + chartArea.bottom) / 2; // Center Y of the chart
+    //         const meta = chart.getDatasetMeta(0); // Get metadata of the first dataset
+    //         const radius = meta.data[0].outerRadius; // Outer radius of the chart
+    //         const labelDistance = 30; // Distance between the circle and the labels
+
+    //         // Calculate total sum of data values
+    //         const total = data.datasets[0].data.reduce((sum, value) => sum + value, 0);
+
+    //         ctx.save(); // Save the canvas state
+
+    //         data.datasets[0].data.forEach((value, index) => {
+    //             const arc = meta.data[index]; // Get the arc corresponding to this label
+    //             const startAngle = arc.startAngle; // Start angle of the arc
+    //             const endAngle = arc.endAngle; // End angle of the arc
+    //             const angle = (startAngle + endAngle) / 2; // Midpoint angle of the arc
+
+    //             // Position for the value (middle)
+    //             const x = centerX + Math.cos(angle) * (radius + labelDistance); // X position
+    //             const valueY = centerY + Math.sin(angle) * (radius + labelDistance); // Y position for value
+
+    //             // Position for the label name (on top)
+    //             const labelY = valueY - 20; // 20px above the value
+
+    //             // Position for the percentage (below the value)
+    //             const percentageY = valueY + 20; // 20px below the value
+
+    //             // Calculate percentage
+    //             const percentage = ((value / total) * 100).toFixed(1); // Calculate percentage and round to 1 decimal
+
+    //             // Draw the label name (on top)
+    //             const labelName = data.labels[index] || 'Label'; // Get label from data.labels or default to "Label"
+    //             ctx.font = '12px Arial'; // Font size for the label name
+    //             ctx.fillStyle = '#000'; // Black color for label name
+    //             ctx.textAlign = 'center';
+    //             ctx.textBaseline = 'middle';
+    //             ctx.fillText(labelName, x, labelY); // Draw the label name
+
+    //             // Draw the value (middle)
+    //             ctx.font = '18px Arial'; // Larger font for the value
+    //             ctx.fillStyle = data.datasets[0].backgroundColor[index]; // Use the segment's color
+    //             ctx.textAlign = 'center';
+    //             ctx.textBaseline = 'middle';
+    //             ctx.fillText(value, x, valueY); // Draw the value
+
+    //             // Draw the percentage (below the value)
+    //             ctx.font = '14px Arial'; // Smaller font for percentage
+    //             ctx.fillStyle = '#666'; // Gray color for percentage
+    //             ctx.fillText(`${percentage}%`, x, percentageY); // Draw the percentage
+    //         });
+
+    //         ctx.restore(); // Restore the canvas state
+    //     },
+    // });
+
+    // Safeguard for null data
+    var firstChartData = {
+        labels: ['ON', 'OFF', 'NC'],
+        datasets: [
+            {
+                data: [@firstChartData?.ON ?? 0, @firstChartData?.OFF ?? 0, @firstChartData?.NC ?? 0],
+                backgroundColor: ['#A4A2FC', '#7CE5D3', '#F993A2'],
+            },
+            {
+                data: [@firstChartData?.ON ?? 0, @firstChartData?.OFF ?? 0, @firstChartData?.NC ?? 0],
+                backgroundColor: ['#6F58FF', '#46C9B8', '#F76775'],
+            },
+        ],
+    };
+
+    var secondChartData = {
+        labels: ['ON', 'OFF', 'NC'],
+        datasets: [
+            {
+                data: [@secondChartData?.ON ?? 0, @secondChartData?.OFF ?? 0, @secondChartData?.NC ?? 0],
+                backgroundColor: ['#A4A2FC', '#7CE5D3', '#F993A2'], // Dim colors
+            },
+            {
+                data: [@secondChartData?.ON ?? 0, @secondChartData?.OFF ?? 0, @secondChartData?.NC ?? 0],
+                backgroundColor: ['#6F58FF', '#46C9B8', '#F76775'], // Bright colors
+            },
+        ],
+    };
+
+    // Generate Chart.js Doughnut Charts
+    var ctx1 = document.getElementById('firstChart').getContext('2d');
+    var ctx2 = document.getElementById('secondChart').getContext('2d');
+
+    var myDoughnutChart1 = new Chart(ctx1, {
+        type: 'doughnut',
+        data: firstChartData,
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 30,
+                    right: 15,
+                    top: 0,
+                    buttom: 0,
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                }
+            },
+            elements: {
+                arc: {
+                    borderWidth: 0, // Overall border width
+                    // borderRadius: 75, // Uniform curve for the entire chart
+                },
+            },
+            cutout: '75%', // Adjusted for proper alignment of inner and outer datasets
+        },
+    });
+
+    var myDoughnutChart2 = new Chart(ctx2, {
+        type: 'doughnut',
+        data: secondChartData,
+        options: {
+            responsive: false,
+            maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    left: 30,
+                    right: 15,
+                    top: 0,
+                    buttom: 0,
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false,
+                    // position: 'top', // Position of the legend
+                    // labels: {
+                    //     usePointStyle: true, // Make legend markers circular
+                    //     pointStyle: 'circle', // Define the shape
+                    //     boxWidth: 10, // Reduce marker size
+                    // },
+                },
+                tooltip: {
+                    enabled: true,
+                },
+            },
+            elements: {
+                arc: {
+                    borderWidth: 0,
+                    borderColor: '#ffffff', // Add a clean border
+                },
+            },
+            cutout: '75%',
+        },
+    });
+
+    // Custom Legend Rendering
+    const renderLegend = (chart, elementId) => {
+        const legendContainer = document.getElementById(elementId);
+        const total = chart.data.datasets[0].data.reduce((sum, value) => sum + value, 0); // Calculate total dynamically
+
+        chart.data.labels.forEach((label, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                   <div class="flex flex-col justify-around sm:mx-7">
+                        <div class="flex items-center">
+                            <!-- Legend Indicator -->
+                            <span
+                                class="mr-2 inline-block h-4 w-4 rounded-full sm:w-5 sm:h-5"
+                                style="background-color: ${chart.data.datasets[0].backgroundColor[index]};">
+                            </span>
+                            <!-- Label -->
+                            <span class="text-xs sm:text-sm">${label}</span>
+                        </div>
+                        <div class="mt-1 flex flex-col sm:mt-2">
+                            <div class="flex text-base sm:text-lg">
+                                <!-- Percentage -->
+                                <span>${((chart.data.datasets[0].data[index] / total) * 100).toFixed(2)}%</span>
+                                <!-- Value -->
+                                <span class="ml-1">(${chart.data.datasets[0].data[index]})</span>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+            legendContainer.appendChild(li);
+        });
+    };
+    // ((onDevices / total) * 100).toFixed(2);
+    // Render Custom Legends for both charts
+    renderLegend(myDoughnutChart1, 'firstChartLegend');
+    renderLegend(myDoughnutChart2, 'secondChartLegend');
+    // updateStatusNetwork()
+</script>

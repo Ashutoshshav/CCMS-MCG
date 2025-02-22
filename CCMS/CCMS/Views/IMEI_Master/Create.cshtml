@@ -1,0 +1,103 @@
+﻿@model CCMS.Models.IMEI_Master
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>IMEI_Master</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UID" class="control-label"></label>
+                <input asp-for="UID" class="form-control" />
+                <span asp-validation-for="UID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SNO" class="control-label"></label>
+                <input asp-for="SNO" class="form-control" />
+                <span asp-validation-for="SNO" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IMEI_no" class="control-label"></label>
+                <input asp-for="IMEI_no" class="form-control" />
+                <span asp-validation-for="IMEI_no" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Response" class="control-label"></label>
+                <input asp-for="Response" class="form-control" />
+                <span asp-validation-for="Response" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Zone" class="control-label"></label>
+                <input asp-for="Zone" class="form-control" />
+                <span asp-validation-for="Zone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ward" class="control-label"></label>
+                <input asp-for="Ward" class="form-control" />
+                <span asp-validation-for="Ward" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <input asp-for="Status" class="form-control" />
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SIM_No" class="control-label"></label>
+                <input asp-for="SIM_No" class="form-control" />
+                <span asp-validation-for="SIM_No" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Latitude" class="control-label"></label>
+                <input asp-for="Latitude" class="form-control" />
+                <span asp-validation-for="Latitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Longitude" class="control-label"></label>
+                <input asp-for="Longitude" class="form-control" />
+                <span asp-validation-for="Longitude" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phase" class="control-label"></label>
+                <input asp-for="Phase" class="form-control" />
+                <span asp-validation-for="Phase" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NoOfStreetlight" class="control-label"></label>
+                <input asp-for="NoOfStreetlight" class="form-control" />
+                <span asp-validation-for="NoOfStreetlight" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FullLoad" class="control-label"></label>
+                <input asp-for="FullLoad" class="form-control" />
+                <span asp-validation-for="FullLoad" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ResponseDTime" class="control-label"></label>
+                <input asp-for="ResponseDTime" class="form-control" />
+                <span asp-validation-for="ResponseDTime" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

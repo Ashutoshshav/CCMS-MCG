@@ -1,0 +1,19 @@
+﻿<!-- Views/Shared/_PopupForm.cshtml -->
+<div id="popupForm" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="popupForm" method="post" asp-action="UpdateData" asp-controller="customer">
+            <input type="hidden" name="id" id="recordId" />
+            <input type="hidden" name="custId" value="@ViewBag.CustID" />
+            <input type="hidden" name="data" value="@Model.LiveData.DBID_Char" />
+            <input type="hidden" name="pageId" value="@ViewBag.PageID" />
+            <div class="form-group">
+                <label for="inputData">Enter MDI Value :</label>
+                <input type="number" name="inputData" id="inputData" class="form-control" step="any" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+
