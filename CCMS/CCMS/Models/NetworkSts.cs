@@ -14,5 +14,11 @@ namespace CCMS.Models
         public int OFFHour { get; set; }
         public int OFFMin { get; set; }
         public int? Loader { get; set; }
+        public int? SET_RTC_DATE { get; set; }
+        public int? SET_RTC_MONTH { get; set; }
+        public int? SET_RTC_YEAR { get; set; }
+        public int? SET_RTC_HOUR { get; set; }
+        public int? SET_RTC_MIN { get; set; }
+        public int? SET_RTC_SEC { get; set; }
     }
 }

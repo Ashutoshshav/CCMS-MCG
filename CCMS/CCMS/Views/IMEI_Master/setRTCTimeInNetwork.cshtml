@@ -1,0 +1,171 @@
+﻿@model CCMS.Models.NetworkSts
+
+@{
+    ViewData["Title"] = "Set RTC Time in Network";
+}
+
+<h1 class="mt-16 text-center text-xl font-semibold text-gray-800">Set RTC Time</h1>
+
+<div class="m-auto max-w-lg rounded-xl bg-white p-5 shadow-lg">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="rounded-md bg-green-100 p-2 text-center text-green-700">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <form asp-action="setRTCTimeInNetwork" method="post" class="space-y-4">
+        <input type="hidden" asp-for="RecordID" />
+
+        <div asp-validation-summary="ModelOnly" class="text-red-500"></div>
+
+        <div class="grid-cols-2 grid gap-4">
+            <div>
+                <label asp-for="SET_RTC_DATE" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="SET_RTC_DATE" class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="SET_RTC_DATE" class="text-sm text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="SET_RTC_MONTH" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="SET_RTC_MONTH" class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="SET_RTC_MONTH" class="text-sm text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="SET_RTC_YEAR" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="SET_RTC_YEAR" class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="SET_RTC_YEAR" class="text-sm text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="SET_RTC_HOUR" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="SET_RTC_HOUR" class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="SET_RTC_HOUR" class="text-sm text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="SET_RTC_MIN" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="SET_RTC_MIN" class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="SET_RTC_MIN" class="text-sm text-red-500"></span>
+            </div>
+
+            <div>
+                <label asp-for="SET_RTC_SEC" class="block text-sm font-medium text-gray-700"></label>
+                <input asp-for="SET_RTC_SEC" class="mt-1 block w-full rounded-lg border px-3 py-2 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                <span asp-validation-for="SET_RTC_SEC" class="text-sm text-red-500"></span>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="w-full rounded-lg bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700">
+                Save
+            </button>
+        </div>
+    </form>
+
+    <!-- UID Filter Input -->
+    <div class="relative mt-6">
+        <label for="uidFilter" class="block text-sm font-medium text-gray-700">Enter at least 3 digit of UID:</label>
+        <div id="feedbackBox" class="mt-4 hidden text-sm font-medium"></div>
+
+        <div class="flex items-center gap-2">
+            <input type="text" id="uidFilter" class="w-full rounded-md border p-2 focus:ring focus:ring-blue-300" placeholder="UID">
+
+            <!-- Activation Button (Initially Hidden) -->
+            <button id="activateBtn" class="hidden rounded-md bg-green-500 px-4 py-2 text-white transition-all hover:bg-green-600">
+                Update
+            </button>
+        </div>
+
+        <!-- Dropdown for UIDs -->
+        <div id="uidDropdown" class="z-10 absolute mt-1 hidden max-h-40 w-full overflow-auto rounded-md border border-gray-300 bg-white shadow-lg">
+            <ul id="dropdownList" class="overflow-auto p-2"></ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("uidFilter").addEventListener("input", function() {
+        let uid = this.value.trim();
+        let dropdown = document.getElementById("uidDropdown");
+        let dropdownList = document.getElementById("dropdownList");
+        let activateBtn = document.getElementById("activateBtn");
+
+        activateBtn.classList.add("hidden"); // Hide activate button if user is still typing
+
+        if (uid === "") {
+            dropdown.classList.add("hidden");
+            return;
+        }
+
+        fetch(`/IMEI_Master/FilterJson?uid=${uid}`)
+            .then(response => response.json())
+            .then(data => {
+                dropdownList.innerHTML = ""; // Clear previous results
+                if (data.length === 0) {
+                    dropdown.classList.add("hidden");
+                    return;
+                }
+
+                dropdown.classList.remove("hidden");
+
+                data.forEach(item => {
+                    let li = document.createElement("li");
+                    li.textContent = item.uid;
+                    li.classList.add("cursor-pointer", "p-2", "hover:bg-gray-200", "rounded-md");
+                    li.addEventListener("click", function() {
+                        selectUID(item.uid);
+                    });
+                    dropdownList.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    });
+
+    function selectUID(uid) {
+        document.getElementById("uidFilter").value = uid; // Set selected UID in input
+        document.getElementById("uidDropdown").classList.add("hidden"); // Hide dropdown
+        document.getElementById("activateBtn").classList.remove("hidden"); // Show activate button
+        document.getElementById("activateBtn").setAttribute("data-uid", uid); // Store UID in button
+    }
+
+    document.getElementById("activateBtn").addEventListener("click", function () {
+        let uid = this.getAttribute("data-uid"); // Get selected UID from button
+
+        fetch(`/IMEI_Master/SetRTCInUID`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ uid: uid }) // Sending UID in JSON body
+        })
+        .then(response => response.json())
+        .then(data => {
+            let feedbackBox = document.getElementById("feedbackBox");
+
+            if (data.success) {
+                feedbackBox.textContent = `${data.message}`;
+                feedbackBox.classList.remove("hidden", "bg-red-100", "text-red-700");
+                feedbackBox.classList.add("bg-green-100", "text-green-700", "p-2", "rounded-md");
+
+                setTimeout(() => {
+                    feedbackBox.classList.add("hidden"); // Hide feedback after 3 seconds
+                    document.getElementById("uidFilter").value = ""; // Clear input
+                    document.getElementById("activationSection").classList.add("hidden"); // Hide activation section
+                }, 6000);
+            } else {
+                feedbackBox.textContent = `${data.message}`;
+                feedbackBox.classList.remove("hidden", "bg-green-100", "text-green-700");
+                feedbackBox.classList.add("bg-red-100", "text-red-700", "p-2", "rounded-md");
+            }
+        })
+        .catch(error => console.error("Error activating device:", error));
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

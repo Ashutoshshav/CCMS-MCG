@@ -326,6 +326,73 @@ namespace CCMS.Controllers
             TempData["ErrorMessage"] = "Invalid input data!";
             return RedirectToAction("SiteDataEntry");
         }
+
+        public IActionResult setRTCTimeInNetwork()
+        {
+            var rtcTime = _context.NetworkSts
+                .FirstOrDefault(); // Fetch only one record
+
+            if (rtcTime == null)
+            {
+                return NotFound(); // Handle the case when no data is found
+            }
+
+            return View(rtcTime);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult setRTCTimeInNetwork(NetworkSts model)
+        {
+            if (ModelState.IsValid)
+            {
+                var rtcTime = _context.NetworkSts.FirstOrDefault();
+                if (rtcTime != null)
+                {
+                    rtcTime.SET_RTC_DATE = model.SET_RTC_DATE;
+                    rtcTime.SET_RTC_MONTH = model.SET_RTC_MONTH;
+                    rtcTime.SET_RTC_YEAR = model.SET_RTC_YEAR;
+                    rtcTime.SET_RTC_HOUR = model.SET_RTC_HOUR;
+                    rtcTime.SET_RTC_MIN = model.SET_RTC_MIN;
+                    rtcTime.SET_RTC_SEC = model.SET_RTC_SEC;
+
+                    _context.SaveChanges(); // Save changes to database
+                    TempData["SuccessMessage"] = "RTC Time Updated Successfully!";
+                }
+
+                return RedirectToAction(nameof(setRTCTimeInNetwork)); // Reload the form
+            }
+
+            return View(model); // Return with validation errors if any
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SetRTCInUID([FromBody] Dictionary<string, string> requestData)
+        {
+            if (!requestData.ContainsKey("uid"))
+            {
+                return Json(new { success = false, message = "Invalid request. UID is missing." });
+            }
+
+            string uid = requestData["uid"];
+            var device = await _context.IMEI_Master.FindAsync(uid);
+
+            if (device == null)
+            {
+                return Json(new { success = false, message = "UID not found!" });
+            }
+
+            // Update LiveDevice field
+            device.Response = "9998";
+            Console.WriteLine(uid + " Activated: " + device.Response);
+
+            // Save changes to the database
+            _context.Update(device);
+            await _context.SaveChangesAsync();
+
+            // Return success response
+            return Json(new { success = true, message = $"RTC Time updated successfully for UID {uid}!" });
+        }
     }
 }
         //[HttpPost]
